@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pima County Board of Supervisors — Contacts</title>
+  <style>
+    :root{
+      --bg:#f7f7fb; --card:#ffffff; --ink:#1f2937;
+      --muted:#6b7280; --accent:#2563eb; --border:#e5e7eb;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:var(--bg); color:var(--ink);
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      line-height:1.55;
+    }
+    .header{max-width:1100px;margin:40px auto 24px;padding:0 20px}
+    h1{margin:0 0 8px;font-size:clamp(24px,3vw,34px)}
+    .lead{margin:0;color:var(--muted)}
+    .address{
+      background:var(--card); border:1px solid var(--border); border-radius:16px;
+      padding:16px; margin-top:16px;
+    }
+    .grid{
+      display:grid; gap:16px;
+      grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+      max-width:1100px; margin:0 auto; padding:0 20px 40px;
+    }
+    .card{
+      background:var(--card); border:1px solid var(--border); border-radius:16px;
+      padding:18px; box-shadow:0 1px 2px rgba(0,0,0,.04);
+    }
+    .card h2{font-size:1.12rem;margin:0 0 4px}
+    .badge{
+      display:inline-block; font-size:.8rem; color:#fff; background:var(--accent);
+      padding:4px 10px; border-radius:999px; margin-bottom:10px;
+    }
+    .row{
+      display:flex; gap:8px; align-items:flex-start;
+      padding:8px 0; border-top:1px solid var(--border);
+    }
+    .row:first-of-type{border-top:0}
+    .row .label{min-width:84px;color:var(--muted);font-size:.92rem}
+    a{color:var(--accent); text-decoration:none}
+    a:hover{text-decoration:underline}
+    .small{font-size:.9rem; color:var(--muted)}
+    .footer{max-width:1100px;margin:0 auto 48px;padding:0 20px;color:var(--muted);font-size:.92rem}
+    @media print {
+      body{background:#fff}
+      .card{box-shadow:none}
+      a{color:inherit; text-decoration:underline}
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>Pima County Board of Supervisors — Contact Directory</h1>
+    <p class="lead">How to get in touch with the County Board of Supervisors.</p>
+    <div class="address">
+      <strong>Which District is the Proposed Airstrip in?</strong><br />
+      The proposed airstrip is in District 3, but the whole board will vote on the project.<br>  
+      It would be most helpful to message everyone on the board with concerns or opinions.
+    </div>
+  </header>
+
+  <main class="grid">
+    <!-- District 1 -->
+    <article class="card">
+      <div class="badge">District 1</div>
+      <h2>Rex Scott <span class="small">(Chair)</span></h2>
+      <div class="row">
+        <span class="label">Phone</span>
+        <div><a href="tel:+15207242738">520-724-2738</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Email</span>
+        <div><a href="mailto:District1@pima.gov">district1@pima.gov</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Website</span>
+        <div><a href="https://www.pima.gov/District1">pima.gov/District1</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Office</span>
+        <div>
+          33 N Stone Ave, 11th Floor<br />
+          Tucson, AZ 85701
+        </div>
+      </div>
+    </article>
+
+    <!-- District 2 -->
+    <article class="card">
+      <div class="badge">District 2</div>
+      <h2>Dr. Matt Heinz</h2>
+      <div class="row">
+        <span class="label">Phone</span>
+        <div><a href="tel:+15207242702">520-724-2702</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Email</span>
+        <div><a href="mailto:District2@pima.gov">District2@pima.gov</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Website</span>
+        <div><a href="https://www.pima.gov/District2">pima.gov/District2</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Office</span>
+        <div>
+          33 N Stone Ave, 11th Floor<br />
+          Tucson, AZ 85701
+        </div>
+      </div>
+    </article>
+
+    <!-- District 3 -->
+    <article class="card">
+      <div class="badge">District 3</div>
+      <h2>Jennifer Allen</h2>
+      <div class="row">
+        <span class="label">Phone</span>
+        <div><a href="tel:+15207248051">520-724-8051</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Email</span>
+        <div><a href="mailto:District3@pima.gov">District3@pima.gov</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Website</span>
+        <div><a href="https://www.pima.gov/District3">pima.gov/District3</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Office</span>
+        <div>
+          33 N Stone Ave, 11th Floor<br />
+          Tucson, AZ 85701
+        </div>
+      </div>
+    </article>
+
+    <!-- District 4 -->
+    <article class="card">
+      <div class="badge">District 4</div>
+      <h2>Steve Christy</h2>
+      <div class="row">
+        <span class="label">Phone</span>
+        <div><a href="tel:+15207248094">520-724-8094</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Email</span>
+        <div><a href="mailto:District4@pima.gov">District4@pima.gov</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Website</span>
+        <div><a href="https://www.pima.gov/District4">pima.gov/District4</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Office</span>
+        <div>
+          33 N Stone Ave, 11th Floor<br />
+          Tucson, AZ 85701
+        </div>
+      </div>
+    </article>
+
+    <!-- District 5 -->
+    <article class="card">
+      <div class="badge">District 5</div>
+      <h2>Andrés Cano</h2>
+      <div class="row">
+        <span class="label">Phone</span>
+        <div><a href="tel:+15207248126">520-724-8126</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Email</span>
+        <div><a href="mailto:District5@pima.gov">District5@pima.gov</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Website</span>
+        <div><a href="https://www.pima.gov/District5">pima.gov/District5</a></div>
+      </div>
+      <div class="row">
+        <span class="label">Office</span>
+        <div>
+          33 N Stone Ave, 11th Floor<br />
+          Tucson, AZ 85701
+        </div>
+      </div>
+    </article>
+  </main>
+
+  </body>
+</html>
+
