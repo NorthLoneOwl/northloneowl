@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Airstrip in the News</title>
+  <style>
+    :root {
+      --bg: #0f172a;     /* slate-900 */
+      --card: #111827;   /* gray-900 */
+      --text: #e5e7eb;   /* gray-200 */
+      --muted: #9ca3af;  /* gray-400 */
+      --ring: #22d3ee;   /* cyan-400 */
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 10% -10%, #1f2937 0%, var(--bg) 40%);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    header {
+      max-width: 1100px; margin: 40px auto 10px; padding: 0 20px;
+    }
+    h1 { font-size: clamp(1.6rem, 2vw + 1rem, 2.2rem); margin: 0 0 6px; }
+    p.lead { margin: 0; color: var(--muted); }
+
+    .grid {
+      max-width: 1100px; margin: 24px auto 60px; padding: 0 20px;
+      display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .video-card {
+      position: relative; overflow: hidden; border-radius: 16px; background: var(--card);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .video-card:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(0,0,0,.45); }
+    .thumb { display: block; width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+    .overlay {
+      position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
+    }
+    .title {
+      position: absolute; left: 12px; right: 12px; bottom: 10px; font-weight: 600; letter-spacing: .2px;
+      text-shadow: 0 2px 10px rgba(0,0,0,.7);
+    }
+    .play {
+      width: 64px; height: 64px; border-radius: 999px; display: grid; place-items: center;
+      background: rgba(255,255,255,.1); backdrop-filter: blur(4px);
+      border: 2px solid rgba(255,255,255,.35); box-shadow: 0 6px 18px rgba(0,0,0,.35);
+    }
+    .play svg { width: 26px; height: 26px; fill: white; filter: drop-shadow(0 2px 8px rgba(0,0,0,.5)); }
+    .card-link { position: absolute; inset: 0; outline: none;}
+    .card-link:focus-visible { box-shadow: 0 0 0 3px var(--ring); border-radius: 16px; }
+
+    footer { max-width: 1100px; margin: 0 auto 40px; padding: 0 20px; color: var(--muted); font-size: .95rem; }
+    code { background: #0b1220; padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>News Media Videos</h1>
+    <p class="lead">Click below to open the video on YouTube.</p>
+  </header>
+
+  <main class="grid" id="grid" aria-live="polite"></main>
+
+  <footer></footer>
+
+  <!--
+    ===============================
+    Video links below 👇
+    ===============================
+  -->
+  <script>
+    // Add your YouTube links here. Title is optional.
+    const videos = [
+      { url: 'https://youtu.be/8HDJobD6vW4?si=hxRHbC-SVKsOSSCX', title: 'KVOA 27-AUG-2025 3' },
+      { url: 'https://youtu.be/U-PTVjPPz1s?si=LYCHRV7-G3YvGIXr', title: 'KVOA 27-AUG-2025 2' },
+      { url: 'https://youtu.be/cC6yMnYbefs?si=C4vbzWLECmrgN2uN', title: 'KVOA 27-AUG-2025 1' },
+      { url: 'https://youtu.be/EcVP5wMB0nQ?si=gwmYpO_eJLgN4PVC', title: 'KGUN 27-AUG-2025' },
+      // Examples — replace or add more lines:
+      // { url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', title: 'My second video' },
+      // { url: 'https://youtube.com/shorts/aqz-KE-bpKQ', title: 'A Short' },
+    ];
+
+    // Extract a YouTube video ID from common URL formats.
+    function getYouTubeID(url) {
+      try {
+        const u = new URL(url);
+        const host = u.hostname.replace(/^www\./, '');
+        if (host === 'youtu.be') return u.pathname.slice(1).split('/')[0];
+        if (host === 'youtube.com' || host === 'm.youtube.com') {
+          if (u.pathname.startsWith('/watch')) return u.searchParams.get('v');
+          if (u.pathname.startsWith('/shorts/')) return u.pathname.split('/')[2] || u.pathname.split('/')[1];
+          if (u.pathname.startsWith('/embed/')) return u.pathname.split('/')[2];
+        }
+        if (host === 'youtube-nocookie.com') {
+          if (u.pathname.startsWith('/embed/')) return u.pathname.split('/')[2];
+        }
+      } catch (e) {
+        // Fallback for raw IDs accidentally entered as URLs
+        if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
+      }
+      return null;
+    }
+
+    const grid = document.getElementById('grid');
+
+    videos.forEach((item, idx) => {
+      const id = getYouTubeID(item.url);
+      if (!id) return; // skip invalid entries
+      const title = item.title && item.title.trim() ? item.title.trim() : `Video ${idx + 1}`;
+      const watchUrl = `https://www.youtube.com/watch?v=${id}`;
+      const thumbUrl = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+
+      const card = document.createElement('article');
+      card.className = 'video-card';
+      card.setAttribute('role', 'group');
+      card.setAttribute('aria-label', title);
+
+      card.innerHTML = `
+        <img class="thumb" loading="lazy" src="${thumbUrl}" alt="Thumbnail for ${title}" />
+        <div class="overlay">
+          <div class="play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="title">${title}</div>
+        </div>
+        <a class="card-link" href="${watchUrl}" target="_blank" rel="noopener" aria-label="Open ${title} on YouTube"></a>
+      `;
+      grid.appendChild(card);
+    });
+
+    // Fallback text if nothing rendered (e.g., all invalid URLs)
+    if (!grid.children.length) {
+      grid.innerHTML = '<p style="color: var(--muted)">No valid videos found. Edit this file and add your YouTube links in the <code>videos</code> array.</p>';
+    }
+  </script>
+
+  <noscript>
+    <div style="max-width:1100px;margin:0 auto 40px;padding:0 20px;color:var(--muted)">
+      Enable JavaScript to see thumbnails. Otherwise, here are plain links:
+      <ul>
+        <li><a href="https://youtu.be/8HDJobD6vW4" target="_blank" rel="noopener">Video 1</a></li>
+      </ul>
+    </div>
+  </noscript>
+</body>
+</html>
