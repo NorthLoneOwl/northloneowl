@@ -115,7 +115,8 @@
       const title = item.title && item.title.trim() ? item.title.trim() : `Video ${idx + 1}`;
       const watchUrl = `https://www.youtube.com/watch?v=${id}`;
       const thumbUrl = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-
+      const embedUrl = `https://www.youtube.com/embed/${id}`;
+      
       const card = document.createElement('article');
       card.className = 'video-card';
       card.setAttribute('role', 'group');
