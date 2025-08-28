@@ -13,48 +13,23 @@
       --ring: #22d3ee;   /* cyan-400 */
     }
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: radial-gradient(1200px 800px at 10% -10%, #1f2937 0%, var(--bg) 40%);
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-    header {
-      max-width: 1100px; margin: 40px auto 10px; padding: 0 20px;
-    }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: radial-gradient(1200px 800px at 10% -10%, #1f2937 0%, var(--bg) 40%); color: var(--text); }
+    header { max-width: 1100px; margin: 36px auto 6px; padding: 0 20px; }
     h1 { font-size: clamp(1.6rem, 2vw + 1rem, 2.2rem); margin: 0 0 6px; }
     p.lead { margin: 0; color: var(--muted); }
-
-    .grid {
-      max-width: 1100px; margin: 24px auto 60px; padding: 0 20px;
-      display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    }
-    .video-card {
-      position: relative; overflow: hidden; border-radius: 16px; background: var(--card);
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
-      transition: transform .2s ease, box-shadow .2s ease;
-    }
+    .grid { max-width: 1100px; margin: 22px auto 60px; padding: 0 20px; display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .video-card { position: relative; overflow: hidden; border-radius: 16px; background: var(--card); box-shadow: 0 10px 30px rgba(0,0,0,.35); transition: transform .2s ease, box-shadow .2s ease; }
     .video-card:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(0,0,0,.45); }
     .thumb { display: block; width: 100%; aspect-ratio: 16/9; object-fit: cover; }
-    .overlay {
-      position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none;
-      background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
-    }
-    .title {
-      position: absolute; left: 12px; right: 12px; bottom: 10px; font-weight: 600; letter-spacing: .2px;
-      text-shadow: 0 2px 10px rgba(0,0,0,.7);
-    }
-    .play {
-      width: 64px; height: 64px; border-radius: 999px; display: grid; place-items: center;
-      background: rgba(255,255,255,.1); backdrop-filter: blur(4px);
-      border: 2px solid rgba(255,255,255,.35); box-shadow: 0 6px 18px rgba(0,0,0,.35);
-    }
+    .overlay { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%); }
+    .title { position: absolute; left: 12px; right: 12px; bottom: 10px; font-weight: 600; letter-spacing: .2px; text-shadow: 0 2px 10px rgba(0,0,0,.7); }
+    .play { width: 64px; height: 64px; border-radius: 999px; display: grid; place-items: center; background: rgba(255,255,255,.1); backdrop-filter: blur(4px); border: 2px solid rgba(255,255,255,.35); box-shadow: 0 6px 18px rgba(0,0,0,.35); }
     .play svg { width: 26px; height: 26px; fill: white; filter: drop-shadow(0 2px 8px rgba(0,0,0,.5)); }
-    .card-link { position: absolute; inset: 0; outline: none;}
+    .card-link { position: absolute; inset: 0; outline: none; }
     .card-link:focus-visible { box-shadow: 0 0 0 3px var(--ring); border-radius: 16px; }
-
+    .yt-link { position: absolute; right: 10px; bottom: 10px; color: #cbd5e1; background: rgba(0,0,0,.35); padding: 4px 8px; border-radius: 8px; text-decoration: none; font-size: 12px; pointer-events: auto; }
+    .yt-link:hover { text-decoration: underline; }
+    iframe { display:block; width:100%; height:100%; border:0; aspect-ratio: 16/9; background:#000; }
     footer { max-width: 1100px; margin: 0 auto 40px; padding: 0 20px; color: var(--muted); font-size: .95rem; }
     code { background: #0b1220; padding: 2px 6px; border-radius: 6px; }
   </style>
@@ -62,31 +37,26 @@
 <body>
   <header>
     <h1>News Media Videos</h1>
-    <p class="lead">Click below to open the video on YouTube.</p>
+    <p class="lead">Click a thumbnail below to play a video. To open in YouTube, click on the 'YouTube' graphic at the lower right of the video once the embedded video is playing.</p>
   </header>
 
   <main class="grid" id="grid" aria-live="polite"></main>
 
-  <footer></footer>
+  <footer>
+ </footer>
 
-  <!--
-    ===============================
-    Video links below 👇
-    ===============================
-  -->
   <script>
-    // Add your YouTube links here. Title is optional.
+    // 1) Add your links here
     const videos = [
       { url: 'https://youtu.be/8HDJobD6vW4?si=hxRHbC-SVKsOSSCX', title: 'KVOA 27-AUG-2025 3' },
       { url: 'https://youtu.be/U-PTVjPPz1s?si=LYCHRV7-G3YvGIXr', title: 'KVOA 27-AUG-2025 2' },
       { url: 'https://youtu.be/cC6yMnYbefs?si=C4vbzWLECmrgN2uN', title: 'KVOA 27-AUG-2025 1' },
       { url: 'https://youtu.be/EcVP5wMB0nQ?si=gwmYpO_eJLgN4PVC', title: 'KGUN 27-AUG-2025' },
-      // Examples — replace or add more lines:
-      // { url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', title: 'My second video' },
-      // { url: 'https://youtube.com/shorts/aqz-KE-bpKQ', title: 'A Short' },
+      // { url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', title: 'Example 2' },
+      // { url: 'https://youtube.com/shorts/aqz-KE-bpKQ', title: 'An example Short' },
     ];
 
-    // Extract a YouTube video ID from common URL formats.
+    // 2) Robustly pull an ID from common YouTube URL shapes
     function getYouTubeID(url) {
       try {
         const u = new URL(url);
@@ -94,34 +64,25 @@
         if (host === 'youtu.be') return u.pathname.slice(1).split('/')[0];
         if (host === 'youtube.com' || host === 'm.youtube.com') {
           if (u.pathname.startsWith('/watch')) return u.searchParams.get('v');
-          if (u.pathname.startsWith('/shorts/')) return u.pathname.split('/')[2] || u.pathname.split('/')[1];
+          if (u.pathname.startsWith('/shorts/')) return (u.pathname.split('/')[2] || u.pathname.split('/')[1]);
           if (u.pathname.startsWith('/embed/')) return u.pathname.split('/')[2];
         }
         if (host === 'youtube-nocookie.com') {
           if (u.pathname.startsWith('/embed/')) return u.pathname.split('/')[2];
         }
       } catch (e) {
-        // Fallback for raw IDs accidentally entered as URLs
-        if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
+        if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url; // raw ID fallback
       }
       return null;
     }
 
     const grid = document.getElementById('grid');
 
-    videos.forEach((item, idx) => {
-      const id = getYouTubeID(item.url);
-      if (!id) return; // skip invalid entries
-      const title = item.title && item.title.trim() ? item.title.trim() : `Video ${idx + 1}`;
-      const watchUrl = `https://www.youtube.com/watch?v=${id}`;
-      const thumbUrl = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-      const embedUrl = `https://www.youtube.com/embed/${id}`;
-      
+    function makeCard({ id, title, watchUrl, thumbUrl }) {
       const card = document.createElement('article');
       card.className = 'video-card';
       card.setAttribute('role', 'group');
       card.setAttribute('aria-label', title);
-
       card.innerHTML = `
         <img class="thumb" loading="lazy" src="${thumbUrl}" alt="Thumbnail for ${title}" />
         <div class="overlay">
@@ -129,21 +90,47 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
           </div>
           <div class="title">${title}</div>
+          <a class="yt-link" href="${watchUrl}" target="_blank" rel="noopener">Open on YouTube ↗︎</a>
         </div>
-        <a class="card-link" href="${watchUrl}" target="_blank" rel="noopener" aria-label="Open ${title} on YouTube"></a>
+        <a class="card-link" href="${watchUrl}" aria-label="Play ${title}"></a>
       `;
-      grid.appendChild(card);
+
+      // Replace thumbnail with an <iframe> on click
+      card.querySelector('.card-link').addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&playsinline=1&modestbranding=1&rel=0`;
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        iframe.referrerPolicy = 'origin-when-cross-origin';
+        iframe.allowFullscreen = true;
+        // Clear and insert player
+        card.innerHTML = '';
+        card.appendChild(iframe);
+      }, { passive: false });
+
+      // Ensure the direct link stays clickable without triggering the embed replacement
+      card.querySelector('.yt-link').addEventListener('click', (e) => e.stopPropagation());
+      return card;
+    }
+
+    // Build the grid
+    videos.forEach((item, idx) => {
+      const id = getYouTubeID(item.url);
+      if (!id) return;
+      const title = item.title && item.title.trim() ? item.title.trim() : `Video ${idx + 1}`;
+      const watchUrl = `https://www.youtube.com/watch?v=${id}`;
+      const thumbUrl = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+      grid.appendChild(makeCard({ id, title, watchUrl, thumbUrl }));
     });
 
-    // Fallback text if nothing rendered (e.g., all invalid URLs)
     if (!grid.children.length) {
-      grid.innerHTML = '<p style="color: var(--muted)">No valid videos found. Edit this file and add your YouTube links in the <code>videos</code> array.</p>';
+      grid.innerHTML = '<p style="color: var(--muted)">No valid videos found. Edit the <code>videos</code> array to add links.</p>';
     }
   </script>
 
   <noscript>
     <div style="max-width:1100px;margin:0 auto 40px;padding:0 20px;color:var(--muted)">
-      Enable JavaScript to see thumbnails. Otherwise, here are plain links:
+      Enable JavaScript to play in place. Otherwise, here are plain links:
       <ul>
         <li><a href="https://youtu.be/8HDJobD6vW4" target="_blank" rel="noopener">Video 1</a></li>
       </ul>
