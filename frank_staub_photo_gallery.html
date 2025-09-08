@@ -89,16 +89,9 @@
   </dialog>
 
   <script>
-    /**
-     * QUICK START
-     * 1) Open your Google Drive folder and make sure each image is shared to "Anyone with the link" (Viewer).
-     * 2) Copy each file's ID (the long string after id=... or between /d/ and /view in the URL).
-     * 3) Paste them into the IMAGES array below. Optionally add titles/captions.
-     *
-     * TIP: The display URL for any Drive file is: https://drive.google.com/uc?export=view&id=FILE_ID
-     *      Thumbnails (fast) are available via:   https://drive.google.com/thumbnail?id=FILE_ID
-     */
-
+/**
+ * Your images (publicly viewable). Thumbs come from Drive; lightbox uses robust fallbacks.
+ */
 const IMAGES = [
   { id: "1xQG30EpR7TLZ5DiEq-eN6kl67g2UIKX1", title: "RWG - PRA-1.jpg" },
   { id: "10_qKQr-LjO62kzIPy_u_JnifBVVsURyI", title: "RWG - PRA-10.jpg" },
@@ -121,71 +114,94 @@ const IMAGES = [
   { id: "18NyT8K_IylkQ4oQMbk0PkciU1YpZRso3", title: "RWG - PRA-9.jpg" },
 ];
 
-    // --------- No changes needed below this line ---------
+// ----- Gallery grid -----
+const gallery = document.getElementById('gallery');
+function driveThumb(id){ return `https://drive.google.com/thumbnail?id=${id}`; }
 
-    const gallery = document.getElementById('gallery');
+// Return multiple public-friendly candidates for full-size view
+function driveFullCandidates(id){
+  return [
+    // Large public thumbnail (fast, no auth)
+    `https://drive.google.com/thumbnail?id=${id}&sz=w3000`,
+    // Googleusercontent pipeline (often works great)
+    `https://lh3.googleusercontent.com/d/${id}=s3000`,
+    // Viewer endpoints as fallbacks
+    `https://drive.google.com/uc?export=view&id=${id}`,
+    `https://drive.google.com/uc?id=${id}`
+  ];
+}
 
-    function driveThumb(id){
-      return `https://drive.google.com/thumbnail?id=${id}`; // fast, auto-sized
+function render(){
+  if(!IMAGES.length){
+    const hint = document.createElement('div');
+    hint.className = 'notice wrap';
+    hint.innerHTML = `No images yet. Add your Google Drive file IDs into <code>IMAGES</code> in this HTML file.`;
+    gallery.replaceWith(hint);
+    return;
+  }
+  const frag = document.createDocumentFragment();
+  IMAGES.forEach((img, idx) => {
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.innerHTML = `
+      <img loading="lazy" decoding="async" src="${driveThumb(img.id)}" alt="${img.title ?? 'Photo'}" data-index="${idx}" />
+      ${img.title ? `<div class='meta'>${img.title}</div>` : ''}
+    `;
+    card.querySelector('img').addEventListener('click', openLightbox);
+    frag.appendChild(card);
+  });
+  gallery.appendChild(frag);
+}
+
+// ----- Lightbox with URL fallback chain -----
+const lb = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightboxImg');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const closeBtn = document.getElementById('closeBtn');
+
+let current = 0;
+
+function setLightboxSrcWithFallback(id){
+  const candidates = driveFullCandidates(id);
+  let i = 0;
+
+  function tryNext(){
+    if(i >= candidates.length){
+      console.warn('All image URL fallbacks failed for', id);
+      lbImg.removeAttribute('src');
+      lbImg.alt = "Can't load full-size image. Check Drive sharing or try reloading.";
+      return;
     }
-    function driveFull(id){
-      return `https://drive.google.com/uc?export=view&id=${id}`;
-    }
+    const url = candidates[i++];
+    lbImg.onerror = tryNext;   // try next if this one fails
+    lbImg.onload = null;
+    lbImg.src = url;
+  }
+  tryNext();
+}
 
-    function render(){
-      if(!IMAGES.length){
-        const hint = document.createElement('div');
-        hint.className = 'notice wrap';
-        hint.innerHTML = `No images yet. Add your Google Drive file IDs into <code>IMAGES</code> in this HTML file.`;
-        gallery.replaceWith(hint);
-        return;
-      }
+function openLightbox(e){
+  current = Number(e.target.dataset.index || 0);
+  setLightboxSrcWithFallback(IMAGES[current].id);
+  lb.showModal();
+}
+function closeLightbox(){ lb.close(); }
+function prev(){ current = (current - 1 + IMAGES.length) % IMAGES.length; setLightboxSrcWithFallback(IMAGES[current].id); }
+function next(){ current = (current + 1) % IMAGES.length; setLightboxSrcWithFallback(IMAGES[current].id); }
 
-      const frag = document.createDocumentFragment();
-      IMAGES.forEach((img, idx) => {
-        const card = document.createElement('article');
-        card.className = 'card';
-        card.innerHTML = `
-          <img loading="lazy" src="${driveThumb(img.id)}" alt="${img.title ?? 'Photo'}" data-index="${idx}" />
-          ${img.title ? `<div class='meta'>${img.title}</div>` : ''}
-        `;
-        card.querySelector('img').addEventListener('click', openLightbox);
-        frag.appendChild(card);
-      });
-      gallery.appendChild(frag);
-    }
+prevBtn.addEventListener('click', prev);
+nextBtn.addEventListener('click', next);
+closeBtn.addEventListener('click', closeLightbox);
+lb.addEventListener('click', (e)=>{ if(e.target === lb) closeLightbox(); });
+window.addEventListener('keydown', (e)=>{
+  if(!lb.open) return;
+  if(e.key === 'Escape') closeLightbox();
+  if(e.key === 'ArrowLeft') prev();
+  if(e.key === 'ArrowRight') next();
+});
 
-    // Simple lightbox
-    const lb = document.getElementById('lightbox');
-    const lbImg = document.getElementById('lightboxImg');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const closeBtn = document.getElementById('closeBtn');
-
-    let current = 0;
-
-    function openLightbox(e){
-      current = Number(e.target.dataset.index || 0);
-      lbImg.src = driveFull(IMAGES[current].id);
-      lb.showModal();
-    }
-
-    function closeLightbox(){ lb.close(); }
-    function prev(){ current = (current - 1 + IMAGES.length) % IMAGES.length; lbImg.src = driveFull(IMAGES[current].id); }
-    function next(){ current = (current + 1) % IMAGES.length; lbImg.src = driveFull(IMAGES[current].id); }
-
-    prevBtn.addEventListener('click', prev);
-    nextBtn.addEventListener('click', next);
-    closeBtn.addEventListener('click', closeLightbox);
-    lb.addEventListener('click', (e)=>{ if(e.target === lb) closeLightbox(); });
-    window.addEventListener('keydown', (e)=>{
-      if(!lb.open) return;
-      if(e.key === 'Escape') closeLightbox();
-      if(e.key === 'ArrowLeft') prev();
-      if(e.key === 'ArrowRight') next();
-    });
-
-    render();
+render();
   </script>
 </body>
 </html>
