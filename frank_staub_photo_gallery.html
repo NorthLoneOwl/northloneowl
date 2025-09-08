@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Frank Staub – Photo Gallery</title>
+  <style>
+    :root{
+      --bg:#0f1115;
+      --card:#171a21;
+      --text:#e8eaed;
+      --muted:#a3abb6;
+      --accent:#8ab4f8;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:linear-gradient(180deg,#0e1014, #12151c);
+      color:var(--text);
+    }
+    header{
+      position:sticky; top:0; z-index:3;
+      backdrop-filter:saturate(140%) blur(10px);
+      background:rgba(10,12,16,.7);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding:18px 20px;}
+    .brand{display:flex; gap:14px; align-items:center}
+    .brand h1{font-size:1.25rem; margin:0; letter-spacing:.3px}
+    .brand a{color:var(--accent); text-decoration:none}
+
+    .notice{color:var(--muted); font-size:.95rem; margin-top:6px}
+
+    main{padding:30px 20px}
+    .grid{max-width:1200px; margin:0 auto; display:grid; grid-template-columns: repeat( auto-fill, minmax(220px, 1fr) ); gap:14px}
+
+    .card{position:relative; background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:18px; overflow:hidden; box-shadow:var(--shadow)}
+    .card img{width:100%; height:220px; object-fit:cover; display:block; transition: transform .25s ease}
+    .card:hover img{transform:scale(1.03)}
+    .card .meta{position:absolute; left:10px; bottom:10px; background:rgba(0,0,0,.45); color:#fff; padding:6px 10px; border-radius:12px; font-size:.8rem}
+
+    /* Lightbox */
+    .lightbox{position:fixed; inset:0; background:rgba(0,0,0,.9); display:none; align-items:center; justify-content:center; z-index:999}
+    .lightbox[open]{display:flex}
+    .lightbox img{max-width:min(92vw,1400px); max-height:86vh; width:auto; height:auto; box-shadow:var(--shadow); border-radius:16px}
+    .lb-controls{position:fixed; inset:0; pointer-events:none}
+    .btn{pointer-events:auto; position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); color:#fff; width:46px; height:46px; border-radius:50%; display:grid; place-items:center; font-size:20px; cursor:pointer}
+    .btn:hover{background:rgba(255,255,255,.18)}
+    .prev{left:24px}
+    .next{right:24px}
+    .close{top:24px; right:24px; transform:none}
+
+    footer{border-top:1px solid rgba(255,255,255,.08); margin-top:30px}
+    footer .wrap{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between}
+    footer a{color:var(--accent)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap brand">
+      <h1>Frank Staub – Photo Gallery</h1>
+      <span class="notice">© 2025 Frank Staub. All rights reserved. · <a href="https://frankstaub.com" target="_blank" rel="noopener">frankstaub.com</a></span>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <p class="notice">All images are copyright © 2025 Frank Staub. Use of these images is prohibited without prior written consent. For licensing inquiries, please visit <a href="https://frankstaub.com" target="_blank" rel="noopener">frankstaub.com</a>.</p>
+    </div>
+
+    <section class="grid" id="gallery" aria-live="polite"></section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div>© 2025 Frank Staub. All rights reserved.</div>
+      <div><a href="https://frankstaub.com" target="_blank" rel="noopener">frankstaub.com</a></div>
+    </div>
+  </footer>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Image viewer">
+    <div class="lb-controls">
+      <button class="btn prev" id="prevBtn" aria-label="Previous">&#10094;</button>
+      <button class="btn next" id="nextBtn" aria-label="Next">&#10095;</button>
+      <button class="btn close" id="closeBtn" aria-label="Close">&#10005;</button>
+    </div>
+    <img id="lightboxImg" alt="Expanded photograph" />
+  </dialog>
+
+  <script>
+    /**
+     * QUICK START
+     * 1) Open your Google Drive folder and make sure each image is shared to "Anyone with the link" (Viewer).
+     * 2) Copy each file's ID (the long string after id=... or between /d/ and /view in the URL).
+     * 3) Paste them into the IMAGES array below. Optionally add titles/captions.
+     *
+     * TIP: The display URL for any Drive file is: https://drive.google.com/uc?export=view&id=FILE_ID
+     *      Thumbnails (fast) are available via:   https://drive.google.com/thumbnail?id=FILE_ID
+     */
+
+const IMAGES = [
+  { id: "1xQG30EpR7TLZ5DiEq-eN6kl67g2UIKX1", title: "RWG - PRA-1.jpg" },
+  { id: "10_qKQr-LjO62kzIPy_u_JnifBVVsURyI", title: "RWG - PRA-10.jpg" },
+  { id: "100_hW9gmeBH2XlyO5PWV6ab3mAmLPOYY", title: "RWG - PRA-11.jpg" },
+  { id: "1pFHikPWv-9qD3firqE8S7FceXvix2X5i", title: "RWG - PRA-12.jpg" },
+  { id: "1Y_JD7xKlbJKaPOc8Bn4lvVCJAOmMd2HC", title: "RWG - PRA-13.jpg" },
+  { id: "1xRtcCKrN_R8DM7m5i94XroiT6VTRIn2q", title: "RWG - PRA-15.jpg" },
+  { id: "1oa1CKEilbgMeon_FOsHRGpjlCiT0c4mO", title: "RWG - PRA-16.jpg" },
+  { id: "1o3k7CODmlgAXrxHJfWHi8pD_f9D_ih0c", title: "RWG - PRA-17.jpg" },
+  { id: "1UJVX45rvKzMXZ6R8T3HpFBrp2dq0clz7", title: "RWG - PRA-18.jpg" },
+  { id: "1VNpQCNOK01TNM7j3PB5BOVRwqw4p3vtl", title: "RWG - PRA-19.jpg" },
+  { id: "1xvj4DWrSTazdS0cO7ireRLw6ce297OaH", title: "RWG - PRA-2.jpg" },
+  { id: "1wd5gjFzM6sifQaWRiWpPt7Ke_njDlB1e", title: "RWG - PRA-20.jpg" },
+  { id: "1tQB4LJfzq8I0_IqzeceYnaRWRylsi50d", title: "RWG - PRA-21.jpg" },
+  { id: "1gHdPcqC37a9RWV-JYk3MhBGDecUf9jFq", title: "RWG - PRA-3.jpg" },
+  { id: "1FakDlFAtgg2VXH62ha3b73ZHJRPvK7jv", title: "RWG - PRA-4.jpg" },
+  { id: "1j2_EcEjynWAcoDk93LAP7cfegpDZ-IL_", title: "RWG - PRA-5.jpg" },
+  { id: "15E7d9s0Q_KvFIYhOp5CavogyNnE4poVa", title: "RWG - PRA-6.jpg" },
+  { id: "1tMCE2YGv_0D0BVH7_qsMDQosXtwHRdtE", title: "RWG - PRA-7.jpg" },
+  { id: "18NyT8K_IylkQ4oQMbk0PkciU1YpZRso3", title: "RWG - PRA-9.jpg" },
+];
+
+    // --------- No changes needed below this line ---------
+
+    const gallery = document.getElementById('gallery');
+
+    function driveThumb(id){
+      return `https://drive.google.com/thumbnail?id=${id}`; // fast, auto-sized
+    }
+    function driveFull(id){
+      return `https://drive.google.com/uc?export=view&id=${id}`;
+    }
+
+    function render(){
+      if(!IMAGES.length){
+        const hint = document.createElement('div');
+        hint.className = 'notice wrap';
+        hint.innerHTML = `No images yet. Add your Google Drive file IDs into <code>IMAGES</code> in this HTML file.`;
+        gallery.replaceWith(hint);
+        return;
+      }
+
+      const frag = document.createDocumentFragment();
+      IMAGES.forEach((img, idx) => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <img loading="lazy" src="${driveThumb(img.id)}" alt="${img.title ?? 'Photo'}" data-index="${idx}" />
+          ${img.title ? `<div class='meta'>${img.title}</div>` : ''}
+        `;
+        card.querySelector('img').addEventListener('click', openLightbox);
+        frag.appendChild(card);
+      });
+      gallery.appendChild(frag);
+    }
+
+    // Simple lightbox
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightboxImg');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const closeBtn = document.getElementById('closeBtn');
+
+    let current = 0;
+
+    function openLightbox(e){
+      current = Number(e.target.dataset.index || 0);
+      lbImg.src = driveFull(IMAGES[current].id);
+      lb.showModal();
+    }
+
+    function closeLightbox(){ lb.close(); }
+    function prev(){ current = (current - 1 + IMAGES.length) % IMAGES.length; lbImg.src = driveFull(IMAGES[current].id); }
+    function next(){ current = (current + 1) % IMAGES.length; lbImg.src = driveFull(IMAGES[current].id); }
+
+    prevBtn.addEventListener('click', prev);
+    nextBtn.addEventListener('click', next);
+    closeBtn.addEventListener('click', closeLightbox);
+    lb.addEventListener('click', (e)=>{ if(e.target === lb) closeLightbox(); });
+    window.addEventListener('keydown', (e)=>{
+      if(!lb.open) return;
+      if(e.key === 'Escape') closeLightbox();
+      if(e.key === 'ArrowLeft') prev();
+      if(e.key === 'ArrowRight') next();
+    });
+
+    render();
+  </script>
+</body>
+</html>
